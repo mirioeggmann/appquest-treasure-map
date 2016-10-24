@@ -10,6 +10,30 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ch.jmelab.treasure_map.MainActivity">
 
+    <GridLayout
+        android:id="@+id/buttonslayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="1dp"
+        android:layoutDirection="rtl"
+        android:padding="5dp">
+
+        <ImageButton
+            android:id="@+id/imagebuttonexport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="3dp"
+            android:src="@drawable/export_points_image" />
+
+        <ImageButton
+            android:id="@+id/imagebuttonpoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="3dp"
+            android:src="@drawable/set_point_image" />
+
+    </GridLayout>
+
     <org.osmdroid.views.MapView
         android:id="@+id/mapview"
         tilesource="Mapnik"
