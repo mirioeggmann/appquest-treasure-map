@@ -55,6 +55,7 @@ public class MainActivity extends Activity implements LocationListener {
     // Location manager
     LocationManager locationManager;
     String provider;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,9 @@ public class MainActivity extends Activity implements LocationListener {
             // Possibility of file picker here
             File mapFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/hsr.mbtiles");  // For example getFileFromUser();
             setUpMapView(mapFile);
+
+            // Clear stored points
+            prepareSharedPreferences();
 
             // Add listener to buttons
             addButtonListeners();
@@ -185,6 +189,12 @@ public class MainActivity extends Activity implements LocationListener {
         map.getOverlays().add(treasureMapTilesOverlay);
     }
 
+    private void prepareSharedPreferences() {
+        sharedPreferences = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE);
+        sharedPreferences.edit().clear().commit();
+        sharedPreferences.edit().apply();
+    }
+
     private void addButtonListeners() {
         // Mark point button
         ImageButton markPointButton = (ImageButton) findViewById(R.id.imagebuttonpoint);
@@ -199,15 +209,17 @@ public class MainActivity extends Activity implements LocationListener {
                     }
 
                     // Acccess shared preferences
-                    SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE);
                     SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
 
                     // Add point
                     Log.i(getClass().toString(), "Adding location marrk at actual point: " + locationManager.getLastKnownLocation(provider).getLatitude() + "/" + locationManager.getLastKnownLocation(provider).getLongitude());
                     long timeStamp = System.currentTimeMillis() / 1000;
+                    Log.d(getClass().toString(), "Latitude measured at: "+timeStamp);
                     preferencesEditor.putLong("Latitude at " + timeStamp, Double.doubleToRawLongBits(locationManager.getLastKnownLocation(provider).getLatitude()));
                     preferencesEditor.putLong("Altitude at " + timeStamp, Double.doubleToRawLongBits(locationManager.getLastKnownLocation(provider).getAltitude()));
+                    Log.d(getClass().toString(), "Altitude measured at: "+timeStamp);
                     preferencesEditor.commit();
+                    preferencesEditor.apply();
                 } catch (SecurityException e) {
                     Log.e(getClass().toString(), e.getLocalizedMessage());
                 }
@@ -230,13 +242,10 @@ public class MainActivity extends Activity implements LocationListener {
                                 // Open applicaiton settings
                                 Log.i(getClass().toString(), "Confirmed exporting marks to logbook..");
 
-                                // Acccess shared preferences
-                                SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE);
-
                                 Intent intent = new Intent("ch.appquest.intent.LOG");
 
                                 if (getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty()) {
-                                    Toast.makeText(v.getContext(), "Logbook App not installed", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(v.getContext(), "Logbook app not installed", Toast.LENGTH_LONG).show();
                                     return;
                                 }
 
@@ -263,10 +272,14 @@ public class MainActivity extends Activity implements LocationListener {
                                                     // On lon match
                                                     if (pointToCheck.getKey().contains("Altitude") && Long.valueOf(pointToCheck.getKey().split(" ")[2]) == Long.valueOf(pointToSearch.getKey().split(" ")[2])) {
                                                         // Add lat/lon to json location object
-                                                        Log.d(getClass().toString(), "Exporting point: " + Long.valueOf((String) pointToSearch.getValue()) * 1000000 + "/" + Long.valueOf((String) pointToCheck.getValue()) * 1000000);
+                                                        Log.d(getClass().toString(), "Exporting point: " + pointToSearch.getValue() + "/" + pointToCheck.getValue());
 
-                                                        singlePoint.put("lat", Double.longBitsToDouble(Long.valueOf((String) pointToSearch.getValue())) * 1000000);
-                                                        singlePoint.put("lon", Double.longBitsToDouble(Long.valueOf((String) pointToCheck.getValue())) * 1000000);
+                                                        // Add lat/lon to json location object
+                                                        singlePoint.put("lat", Double.longBitsToDouble((Long) pointToSearch.getValue()) * 1000000);
+                                                        singlePoint.put("lon", Double.longBitsToDouble((Long) pointToCheck.getValue()) * 1000000);
+
+                                                        // Add locations to array
+                                                        jsonPoints.put(singlePoint);
 
                                                         // Break search
                                                         break;
@@ -277,17 +290,20 @@ public class MainActivity extends Activity implements LocationListener {
                                                     // On lat match
                                                     if (pointToCheck.getKey().contains("Latitude") && Long.valueOf(pointToCheck.getKey().split(" ")[2]) == Long.valueOf(pointToSearch.getKey().split(" ")[2])) {
                                                         // Add lat/lon to json location object
-                                                        singlePoint.put("lat", Double.longBitsToDouble(Long.valueOf((String) pointToCheck.getValue())) * 1000000);
-                                                        singlePoint.put("lon", Double.longBitsToDouble(Long.valueOf((String) pointToSearch.getValue())) * 1000000);
+                                                        Log.d(getClass().toString(), "Exporting point: " + pointToCheck.getValue() + "/" + pointToSearch.getValue());
+
+                                                        // Add lat/lon to json location object
+                                                        singlePoint.put("lat", Double.longBitsToDouble((Long) pointToCheck.getValue()) * 1000000);
+                                                        singlePoint.put("lon", Double.longBitsToDouble((Long) pointToSearch.getValue()) * 1000000);
+
+                                                        // Add locations to array
+                                                        jsonPoints.put(singlePoint);
 
                                                         // Break search
                                                         break;
                                                     }
                                                 }
                                             }
-
-                                            // Add locations to array
-                                            jsonPoints.put(singlePoint);
 
                                             // Add timestamp to list of handled ones
                                             timestampList.add(Long.valueOf(pointToSearch.getKey().split(" ")[2]));

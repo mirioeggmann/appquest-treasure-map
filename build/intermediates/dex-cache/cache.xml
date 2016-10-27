@@ -34,7 +34,7 @@
         jumboMode="true"
         optimize="true"
         revision="24.0.2"
-        sha1="89c1233593592c2c0c41a9e58b97786a50d81199">
+        sha1="07802487b395c30c181fba5fbb08bef2d89061cb">
         <dex dex="C:\dev\workspace\appquest-treasure-map\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_b72838702126493d6a081dddec0c6a378d2732a7\classes.dex" />
     </item>
     <item
@@ -43,7 +43,7 @@
         jumboMode="true"
         optimize="true"
         revision="24.0.2"
-        sha1="a1ab0a52a87d4cf329a864fd53053170297ea089">
+        sha1="97d1e025498574f37b925ff3b27ae77220ae6d39">
         <dex dex="C:\dev\workspace\appquest-treasure-map\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_c4c3ffaee65f235e07ff31f168e0102cadd29764\classes.dex" />
     </item>
     <item
