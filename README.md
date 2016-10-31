@@ -9,6 +9,7 @@ AppQuest Treasure Map is the 3. application for the [App Quest 2016](http://appq
 ### General
 |   |  |
 |---|---|
+| AppQuest Repository | [AppQuest 2016](https://github.com/mirioeggmann/appquest) |
 | Application Requirements | http://appquest.hsr.ch/2016/schatzkarte |
 | Minimum API Level | [API level 23 (Marshmallow)](https://developer.android.com/about/versions/marshmallow/android-6.0.html) |
 | Development Environment | [Android Studio](https://developer.android.com/studio/index.html) |
